@@ -1,0 +1,37 @@
+version: "3"
+services:
+    php-fpm:
+        image: "php:7.3.15-fpm-alpine3.11"
+        networks: 
+            - bridge-1
+        volumes: 
+            - F:\phpStudy\PHPTutorial\WWW:/home/www-data
+            - F:\phpStudy\PHPTutorial\docker\php-fpm\etc\php:/usr/local/etc/php
+            - F:\phpStudy\PHPTutorial\docker\php-fpm\softs:/home/softs
+        expose: 
+            - "9000"
+        command: 
+            - php-fpm
+    nginx: 
+        image: "nginx:1.17.6-alpine"
+        networks: 
+            - bridge-1
+        volumes: 
+            - F:\phpStudy\PHPTutorial\WWW:/home/www-data
+            - F:\phpStudy\PHPTutorial\docker\nginx\logs:/var/log/nginx
+            - F:\phpStudy\PHPTutorial\docker\nginx\conf.d:/etc/nginx/conf.d
+        ports: 
+            - "80:80"
+    redis: 
+        image: "redis:alpine"
+        networks: 
+            - bridge-1
+        expose: 
+            - "6379"
+        
+networks:  
+    bridge-1:  
+        driver: bridge
+        
+        
+

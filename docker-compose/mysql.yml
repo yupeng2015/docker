@@ -1,0 +1,16 @@
+version: "3"
+services:
+    mysql:
+        image: mysql:8.0.19
+        networks:
+            - docker_bridge-1
+        ports: 
+            - "3306:3306"
+        expose:
+            - "3306"
+        environment:
+            - MYSQL_ROOT_PASSWORD=123456
+networks: 
+    docker_bridge-1:  
+        external: true
+        

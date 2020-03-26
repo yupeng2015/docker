@@ -1,0 +1,87 @@
+version: '3'
+services:
+  es01:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es01
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es02,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - F:\phpStudy\PHPTutorial\docker\es\es01\data:/usr/share/elasticsearch/data
+      - F:\phpStudy\PHPTutorial\docker\es\config\es01.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    networks:
+      - elastic
+  es02:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es02
+    environment:
+      - node.name=es02
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es03
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - F:\phpStudy\PHPTutorial\docker\es\es02\data:/usr/share/elasticsearch/data
+      - F:\phpStudy\PHPTutorial\docker\es\config\es02.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    expose: 
+        - "9300"
+    ports:
+        - "9201:9200"
+        - "9301:9300"
+    networks:
+      - elastic
+  es03:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.5.2
+    container_name: es03
+    environment:
+      - node.name=es03
+      - cluster.name=es-docker-cluster
+      - discovery.seed_hosts=es01,es02
+      - cluster.initial_master_nodes=es01,es02,es03
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - F:\phpStudy\PHPTutorial\docker\es\es03\data:/usr/share/elasticsearch/data
+      - F:\phpStudy\PHPTutorial\docker\es\config\es03.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    expose: 
+        - "9300"
+    ports:
+        - "9202:9200"
+        - "9302:9300"
+    networks:
+      - elastic
+  es-head:
+    image: mobz/elasticsearch-head:5-alpine
+    environment:
+        TZ: 'Asia/Shanghai'
+    ports:
+        - '9100:9100'
+    volumes:
+      - F:\phpStudy\PHPTutorial\docker\es\head\app:/usr/src/app
+    networks:
+      - elastic
+networks:
+  elastic:
+    driver: bridge

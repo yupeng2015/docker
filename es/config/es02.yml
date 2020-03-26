@@ -1,0 +1,7 @@
+cluster.name: "es-docker-cluster"
+network.host: 0.0.0.0
+http.cors.enabled: true
+http.cors.allow-origin: "*"
+
+node.name: es02
+node.master: true
