@@ -1,7 +1,7 @@
 version: "3"
 services:
     php-fpm:
-        image: "php:7.3.15-fpm-alpine3.11"
+        image: "soen/php:fpm-7.3-alpine-all"
         networks: 
             - bridge-1
         volumes: 
@@ -12,6 +12,19 @@ services:
             - "9000"
         command: 
             - php-fpm
+    swoole: 
+        image: soen/php-swoole:2.0
+        networks:
+            - bridge-1
+        volumes: 
+            - F:\phpStudy\PHPTutorial\WWW:/home/www-data
+            - F:\phpStudy\PHPTutorial\docker\swoole\etc\php:/usr/local/etc/php
+            - F:\phpStudy\PHPTutorial\docker\swoole\softs:/home/softs
+        expose: 
+            - "9501"
+        tty: true
+        command: 
+            - sh
     nginx: 
         image: "nginx:1.17.6-alpine"
         networks: 
@@ -27,11 +40,10 @@ services:
         networks: 
             - bridge-1
         expose: 
-            - "6379"
-        
+            - "6379"  
 networks:  
     bridge-1:  
-        driver: bridge
+        external: true
         
         
 
