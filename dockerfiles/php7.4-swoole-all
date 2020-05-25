@@ -5,7 +5,7 @@ RUN apk --update add procps  && \
     rm -rf /var/cache/apk/* && \
 	apk add make gcc musl-dev g++ zlib-dev autoconf libpng-dev openssl-dev
 
-RUN docker-php-ext-install gd pdo pdo_mysql
+RUN docker-php-ext-install gd pdo pdo_mysql bcmath sockets pcntl
 
 #安装phpredis扩展#
 #RUN wget -P /tmp https://github.com/phpredis/phpredis/archive/5.2.2.tar.gz && \
@@ -35,3 +35,11 @@ RUN apk add imagemagick-dev jpeg-dev libpng-dev freetype-dev && \
 #安装php的imagick扩展#
 COPY imagick-3.4.4.tgz /tmp
 RUN pecl install /tmp/imagick-3.4.4.tgz && touch /usr/local/etc/php/conf.d/imagick.ini && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini
+
+#安装swoole扩展#
+ADD swoole-v4.5.1.tar.gz /tmp
+RUN cd /tmp/swoole-src-4.5.1 && phpize && ./configure && make && make install && \
+	touch /usr/local/etc/php/conf.d/swoole.ini && echo "extension=swoole.so" > /usr/local/etc/php/conf.d/swoole.ini
+
+#清理tmp目录#
+RUN rm -rf /tmp/*	
