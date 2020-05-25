@@ -1,0 +1,37 @@
+FROM php:7.4.6-cli-alpine3.11
+RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.aliyun.com/g' /etc/apk/repositories
+
+RUN apk --update add procps  && \
+    rm -rf /var/cache/apk/* && \
+	apk add make gcc musl-dev g++ zlib-dev autoconf libpng-dev openssl-dev
+
+RUN docker-php-ext-install gd pdo pdo_mysql
+
+#安装phpredis扩展#
+#RUN wget -P /tmp https://github.com/phpredis/phpredis/archive/5.2.2.tar.gz && \
+#	mkdir /tmp/phpredis && \
+#	tar -zxvf /tmp/5.2.2.tar.gz -C /tmp/phpredis && cd /tmp/phpredis/phpredis-5.2.2 && phpize && ./configure && make && make install
+
+ADD phpredis-5.2.2.tar.gz /tmp
+RUN cd /tmp/phpredis-5.2.2 && phpize && ./configure && make && make install && \
+	touch /usr/local/etc/php/conf.d/redis.ini && echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
+
+#安装mongodb扩展#
+#RUN  wget -P /tmp https://github.com/mongodb/mongo-php-driver/releases/download/1.7.4/mongodb-1.7.4.tgz
+COPY mongodb-1.7.4.tgz /tmp
+RUN pecl install /tmp/mongodb-1.7.4.tgz && touch /usr/local/etc/php/conf.d/mongodb.ini && echo "extension=mongodb.so" > /usr/local/etc/php/conf.d/mongodb.ini
+
+#安装tideways扩展#
+RUN wget -P /tmp https://github.com/tideways/php-xhprof-extension/archive/v5.0.2.tar.gz && \
+	mkdir /tmp/tideways && \
+	tar -zxvf /tmp/v5.0.2.tar.gz -C /tmp/tideways && cd /tmp/tideways/php-xhprof-extension-5.0.2 && phpize && ./configure && make && make install && \
+	touch /usr/local/etc/php/conf.d/tideways.ini && echo "extension=tideways_xhprof.so" > /usr/local/etc/php/conf.d/tideways.ini
+
+#安装ImageMagick#
+ADD ImageMagick.tar.gz /tmp
+RUN apk add imagemagick-dev jpeg-dev libpng-dev freetype-dev && \
+	cd /tmp/ImageMagick-7.0.10-10 && ./configure --prefix=/usr/local/imagemagick && make && make install
+
+#安装php的imagick扩展#
+COPY imagick-3.4.4.tgz /tmp
+RUN pecl install /tmp/imagick-3.4.4.tgz && touch /usr/local/etc/php/conf.d/imagick.ini && echo "extension=imagick.so" > /usr/local/etc/php/conf.d/imagick.ini
